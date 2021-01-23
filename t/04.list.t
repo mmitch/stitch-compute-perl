@@ -1,5 +1,5 @@
 #!perl
-use Test::More tests => 5;
+use Test::More tests => 7;
 use warnings;
 use strict;
 
@@ -38,4 +38,32 @@ subtest 'repetition given when greater than 1' => sub {
 						       Mock->new(string => 'B'),
 					    ] );
     is($result->to_string(), '3x ( A B )');
+};
+
+subtest 'nested lists are flattened if inner repetition is 1' => sub {
+    my $inner = Stitch::Compute::List->new(times => 1,
+					   elems => [ Mock->new(string => 'A'),
+						      Mock->new(string => 'B'),
+					   ] );
+    my $outer = Stitch::Compute::List->new(times => 2,
+					   elems => [ Mock->new(string => 'C'),
+						      $inner,
+						      Mock->new(string => 'D'),
+					   ] );
+    is($outer->to_string(), '2x ( C A B D )');
+    is(scalar @{$outer->elems}, 4);
+};
+
+subtest 'nested lists are kept if inner repetition more than 1' => sub {
+    my $inner = Stitch::Compute::List->new(times => 2,
+					   elems => [ Mock->new(string => 'A'),
+						      Mock->new(string => 'B'),
+					   ] );
+    my $outer = Stitch::Compute::List->new(times => 2,
+					   elems => [ Mock->new(string => 'C'),
+						      $inner,
+						      Mock->new(string => 'D'),
+					   ] );
+    is($outer->to_string(), '2x ( C 2x ( A B ) D )');
+    is(scalar @{$outer->elems}, 3);
 };

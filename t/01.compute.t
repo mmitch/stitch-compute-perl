@@ -1,5 +1,5 @@
 #!perl
-use Test::More tests => 5;
+use Test::More tests => 7;
 use warnings;
 use strict;
 
@@ -22,7 +22,17 @@ subtest 'from 10 to 11' => sub {
     is($result, 'K10 A1');
 };
 
+subtest 'from 10 to 20' => sub {
+    my $result = Stitch::Compute::adjust_stitches(10, 20);
+    is($result, '10x ( K1 A1 )');
+};
+
 subtest 'from 53 to 48' => sub {
     my $result = Stitch::Compute::adjust_stitches(53, 48);
     is($result, 'K43 C5');
+};
+
+subtest 'from 30 to 25' => sub {
+    my $result = Stitch::Compute::adjust_stitches(30, 25);
+    is($result, '5x ( K4 C1 )');
 };
