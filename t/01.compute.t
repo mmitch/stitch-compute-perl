@@ -1,5 +1,5 @@
 #!perl
-use Test::More tests => 11;
+use Test::More tests => 13;
 use warnings;
 use strict;
 
@@ -55,4 +55,14 @@ subtest 'combine: from 112 to 70' => sub {
 subtest 'combine: from 113 to 70' => sub {
     my $result = Stitch::Compute::adjust_stitches(113, 70);
     is($result, 'K1 C2 K1 C2 K1 C1 K1 C2 K1 C1 K1 C2 K1 C2 K1 C1 K1 C2 K1 C1 K1 C2 K1 C2 K1 C1 K1 C2 K1 C1 K1 C2 K1 C2 K1 C1 K1 C2 K1 C1 K1 C2 K1 C2 K1 C1 K1 C2 K1 C1 K1 C2 K1 C1');
+};
+
+subtest 'error: more than double does not work' => sub {
+    my $result = Stitch::Compute::adjust_stitches(20, 41);
+    is($result, 'ERROR: too many stitches to add - 20 can grow to 40 max');
+};
+
+subtest 'error: less than half does not work' => sub {
+    my $result = Stitch::Compute::adjust_stitches(30, 14);
+    is($result, 'ERROR: too few stitches to keep - 30 can shrink to 15 min');
 };

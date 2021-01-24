@@ -6,27 +6,39 @@ package Stitch::Compute;
 
 use Math::Utils qw(:utility);
 
-use Stitch::Compute::Keep;
 use Stitch::Compute::Add;
 use Stitch::Compute::Combine;
+use Stitch::Compute::Error;
+use Stitch::Compute::Keep;
 use Stitch::Compute::List;
 
 sub adjust_stitches {
     my ($from, $to) = @_;
 
-    my $struct;
+    return _adjust($from, $to)->to_string();
+}
+
+sub _adjust {
+    my ($from, $to) = @_;
+
     if ($from == $to) {
-	$struct = Stitch::Compute::Keep->new(times => $to);
-    }
-    else {
-	my $repeats = gcd( $from, $to );
-
-	$struct = Stitch::Compute::List->new(
-	    times => $repeats,
-	    elems => [ _adjust_evenly($from / $repeats, $to / $repeats) ]);
+	return Stitch::Compute::Keep->new(times => $from);
     }
 
-    return $struct->to_string();
+    my $max = 2*$from;
+    my $min = int(($from + 1)/2);
+    if ($to > $max) {
+	return Stitch::Compute::Error->new(error => "too many stitches to add - $from can grow to $max max");
+    }
+
+    if ($to < $min) {
+	return Stitch::Compute::Error->new(error => "too few stitches to keep - $from can shrink to $min min");
+    }
+
+    my $repeats = gcd( $from, $to );
+    return Stitch::Compute::List->new(
+	times => $repeats,
+	elems => [ _adjust_evenly($from / $repeats, $to / $repeats) ]);
 }
 
 sub _adjust_evenly {
