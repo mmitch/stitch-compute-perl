@@ -85,9 +85,9 @@ sub _adjust_evenly {
 	die "*** final length != expected length";
     }
 
+    my $head_length = length $head;
+    my $tail_length = length $tail;
     if ($head_what eq $tail_what) {
-	my $head_length = length $head;
-	my $tail_length = length $tail;
 	# TODO: compute once instead of loop
 	while ($head_length > $tail_length) {
 	    $actions = substr($actions, 1) . $head_what;
@@ -99,6 +99,10 @@ sub _adjust_evenly {
 	    $head_length++;
 	    $tail_length--;
 	}
+    }
+    elsif ($head_length == 1 and $tail_length > 1) {
+	my $to_move = int($tail_length / 2);
+	$actions = ($tail_what x $to_move) . substr($actions, 0, -1 * $to_move);
     }
 
     my @actions;
