@@ -48,15 +48,16 @@ sub _adjust_evenly {
 
     my $actions = '';
 
-    my $grow   = $to > $from;
-    my $shrink = $to < $from;
+    my $grow      = $to > $from;
+    my $shrink    = $to < $from;
+    my $allshrink = $to * 2 == $from;
 
     my $oldpos = 0;
     my $newpos = 0;
     while ($oldpos < $from or $newpos < $to) {
 	my $diff = ( $oldpos ) - ($newpos / $to * $from);
 
-	if ($diff < 0 and $shrink) {
+	if ($shrink and ($diff < 0 or $allshrink)) {
 	    $actions .= "C";
 	    $oldpos++;
 	    $oldpos++;
